@@ -57,12 +57,11 @@ app.post('/posts', (req, res) => {
 
 
 //PUT
-// not working yet
-app.put('/blogs/:id', (req, res) => {
+app.put('/posts/:id', (req, res) => {
   if (!(req.params.id&& req.body.id && req.params.id === req.body.id)) {
     const message = (
       `Request path id(${req.params.id}) and request body id
-      (${req.bod.id} must match`);
+      (${req.body.id} must match`);
       console.error(message);
       res.status(400).json({message: message});
   }
@@ -70,13 +69,14 @@ app.put('/blogs/:id', (req, res) => {
   const updateableFields = ['title','author','content'];
 
   updateableFields.forEach(field => {
+    console.log(req.body);
     if (field in req.body) {
       toUpdate[field] = req.body[field];
     }
   });
 
   Blogs
-    .findByIdAndUpdate(req.params._id, {$set: toUpdate})
+    .findByIdAndUpdate(req.params.id, toUpdate)//didnt need $set because it already is set as object
     .exec()
     .then(blogs => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
@@ -86,8 +86,7 @@ app.put('/blogs/:id', (req, res) => {
 
 
 //DELETE
-// findById needs the work
-app.delete('/blogs/:id', (req, res) => {
+app.delete('/posts/:id', (req, res) => {
   Blogs
     .findByIdAndRemove(req.params.id)
     .exec()
