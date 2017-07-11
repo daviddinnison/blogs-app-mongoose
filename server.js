@@ -13,15 +13,13 @@ app.use(bodyParser.json());
 
 //GET all
 app.get('/posts', (req, res) => {
-  console.log('this worked fine');
   Blogs
     .find()
     .limit(10)
     .exec()
     .then(blogs => {
-      console.log('inside blog posts promise');
       res.json(blogs);
-    })
+})
     .catch(err => {console.error(err);
       res.status(500).json({message:'Internal Server Error'});
     })
@@ -50,20 +48,52 @@ app.post('/posts', (req, res) => {
     author: req.body.author,
     content: req.body.content
   })
-  .then(blog => res.status(201).send().json(blog))
-  .catch(err => console.error(err);
+    .then(blog => res.status(201).send().json(blog))
+    .catch(err => {console.error(err);
       res.status(500).json({message: 'Internal Server Error'});
-   );
+    });
 });
 
 
 
 //PUT
+// not working yet
+app.put('/blogs/:id', (req, res) => {
+  if (!(req.params.id&& req.body.id && req.params.id === req.body.id)) {
+    const message = (
+      `Request path id(${req.params.id}) and request body id
+      (${req.bod.id} must match`);
+      console.error(message);
+      res.status(400).json({message: message});
+  }
+  const toUpdate = {};
+  const updateableFields = ['title','author','content'];
+
+  updateableFields.forEach(field => {
+    if (field in req.body) {
+      toUpdate[field] = req.body[field];
+    }
+  });
+
+  Blogs
+    .findByIdAndUpdate(req.params._id, {$set: toUpdate})
+    .exec()
+    .then(blogs => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
 
 
 
 
 //DELETE
+// findById needs the work
+app.delete('/blogs/:id', (req, res) => {
+  Blogs
+    .findByIdAndRemove(req.params.id)
+    .exec()
+    .then(blogs => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
 
 
 
