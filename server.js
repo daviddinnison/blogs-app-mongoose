@@ -11,20 +11,66 @@ const {Blogs} = require('./models');
 const app = express();
 app.use(bodyParser.json());
 
-app.get('/blog-posts', (req, res) => {
+//GET all
+app.get('/posts', (req, res) => {
+  console.log('this worked fine');
   Blogs
     .find()
     .limit(10)
     .exec()
     .then(blogs => {
+      console.log('inside blog posts promise');
       res.json(blogs);
     })
     .catch(err => {console.error(err);
       res.status(500).json({message:'Internal Server Error'});
-    });
+    })
+});
+
+//GET id
+// app.get('/posts/:id', (req, res) => {
+//   Blogs
+//     .find({})
+// })
+
+
+//POST
+app.post('/posts', (req, res) => {
+  const requiredFields = ['title', 'author', 'content'];
+  for(let i = 0; i < requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if(!(field in req.body)) {
+      const message = `Missing ${field} in request.`
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+  Blogs.create({
+    title: req.body.title,
+    author: req.body.author,
+    content: req.body.content
+  })
+  .then(blog => res.status(201).send().json(blog))
+  .catch(err => console.error(err);
+      res.status(500).json({message: 'Internal Server Error'});
+   );
 });
 
 
+
+//PUT
+
+
+
+
+//DELETE
+
+
+
+
+
+
+//Server stuff
 app.use('*', function(req, res) {
   res.status(404).json({message: 'Not Found'});
 });
