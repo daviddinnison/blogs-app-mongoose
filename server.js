@@ -19,7 +19,7 @@ app.get('/posts', (req, res) => {
     .exec()
     .then(blogs => {
       res.json(blogs);
-})
+    })
     .catch(err => {console.error(err);
       res.status(500).json({message:'Internal Server Error'});
     })
@@ -58,12 +58,12 @@ app.post('/posts', (req, res) => {
 
 //PUT
 app.put('/posts/:id', (req, res) => {
-  if (!(req.params.id&& req.body.id && req.params.id === req.body.id)) {
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message = (
-      `Request path id(${req.params.id}) and request body id
-      (${req.body.id} must match`);
-      console.error(message);
-      res.status(400).json({message: message});
+      `Request path id(${req.params.id}) and request body id` +
+      `(${req.body.id}) must match`);
+    console.error(message);
+    res.status(400).json({message: message});
   }
   const toUpdate = {};
   const updateableFields = ['title','author','content'];
